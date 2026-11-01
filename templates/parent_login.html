@@ -13,7 +13,7 @@ body{margin:0;background:#101116;color:#f6f6f9;font:16px Arial,sans-serif}header
 <label><input id="adult" type="checkbox"> I am 18 or older and registering as a parent or guardian.</label>
 <button type="submit" id="login">Sign in</button><button type="button" id="register" class="secondary">Create parent account</button></form>
 <button type="button" id="reset" class="secondary">Send password reset email</button></div>
-<div id="signed-in"><h2>You're signed in</h2><p id="account-email"></p><p class="muted">Your private garage dashboard is under development. No garage data entry is enabled yet.</p><button id="logout" type="button">Sign out</button></div>
+<div id="recovery" style="display:none"><h2>Set a new password</h2><label for="new-password">New password (8+ characters)</label><input id="new-password" type="password" minlength="8"><button id="save-password" type="button">Update password</button></div>\n<div id="signed-in"><h2>You're signed in</h2><p id="account-email"></p><p class="muted">Your private garage dashboard is under development. No garage data entry is enabled yet.</p><button id="logout" type="button">Sign out</button></div>
 <p id="status" class="status" role="status" aria-live="polite"></p></div>
 <p class="muted">Please use a unique password. Supabase manages authentication; TrackSide Live does not store your password in its GitHub repository.</p>
 </main>
@@ -23,8 +23,8 @@ const client=createClient('https://sxelydexamawmagngpte.supabase.co','sb_publish
 const el=id=>document.getElementById(id), status=msg=>el('status').textContent=msg;
 const controls=['login','register','reset'];
 function busy(flag){controls.forEach(id=>el(id).disabled=flag);}
-function display(session){el('signed-in').style.display=session?'block':'none';el('signed-out').style.display=session?'none':'block';el('account-email').textContent=session?.user?.email||'';}
-client.auth.onAuthStateChange((_event,session)=>display(session));
+let recovering=false;function display(session){el('signed-in').style.display=session&&!recovering?'block':'none';el('signed-out').style.display=session||recovering?'none':'block';el('recovery').style.display=recovering?'block':'none';el('account-email').textContent=session?.user?.email||'';}
+client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')recovering=true;display(session);});
 const {data:{session}}=await client.auth.getSession();display(session);
 el('auth-form').addEventListener('submit',async e=>{e.preventDefault();busy(true);status('');
 try{const {error}=await client.auth.signInWithPassword({email:el('email').value.trim(),password:el('password').value});if(error)throw error;status('Signed in successfully.');el('password').value='';}
@@ -34,5 +34,5 @@ try{const {data,error}=await client.auth.signUp({email:el('email').value.trim(),
 catch(e){status(e.message||'Registration failed.');}finally{busy(false);}});
 el('reset').addEventListener('click',async()=>{if(!el('email').reportValidity())return;busy(true);status('');
 try{const {error}=await client.auth.resetPasswordForEmail(el('email').value.trim(),{redirectTo:window.location.origin+'/parent-login'});if(error)throw error;status('If that email has an account, a reset email will be sent.');}catch(e){status(e.message||'Unable to request reset.');}finally{busy(false);}});
-el('logout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();status(error?error.message:'Signed out.');});
+el('save-password').addEventListener('click',async()=>{const password=el('new-password').value;if(password.length<8){status('Use at least 8 characters.');return;}const {error}=await client.auth.updateUser({password});if(error){status(error.message);return;}recovering=false;el('new-password').value='';const {data:{session}}=await client.auth.getSession();display(session);status('Password updated.');});\nel('logout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();status(error?error.message:'Signed out.');});
 </script></body></html>
