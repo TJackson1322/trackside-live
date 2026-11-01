@@ -8,7 +8,8 @@ BASE = Path(__file__).resolve().parent
 
 with (BASE / "drivers.json").open(encoding="utf-8") as f:
     drivers = json.load(f)["drivers"]
-
+with (BASE / "race_data.json").open(encoding="utf-8") as f:
+    race_data = json.load(f)
 HTML = """
 <!DOCTYPE html>
 <html>
