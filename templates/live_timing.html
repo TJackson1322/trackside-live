@@ -21,7 +21,7 @@ button{background:#ed2939;border:0;cursor:pointer;font-weight:bold}button.second
 <body>
 <header><h1>🏁 TRACK<span class="accent">SIDE</span> LIVE</h1><p>LIVE TIMING DASHBOARD</p></header>
 <main>
-<nav><a href="/">🏠 Home</a><a href="/race-center">🏁 Race Center</a><a href="/live-timing">⏱ Live Timing</a></nav>
+<nav><a href="/">🏠 Home</a><a href="/race-center">🏁 Race Center</a><a href="/live-timing">⏱ Live Timing</a><a href="/driver-garage">🔒 Driver Garage</a></nav>
 <div class="demo"><strong>SIMULATED DEMO — NOT LIVE TRACK DATA.</strong> All drivers, lap times, positions, and session updates on this page are fictional. No timing provider is connected.</div>
 <h2>Timing & Scoring <span class="badge">DEMO</span></h2>
 <div class="controls">
@@ -34,9 +34,9 @@ button{background:#ed2939;border:0;cursor:pointer;font-weight:bold}button.second
 <div class="stat"><span>Session</span><strong id="session">Demo Qualifying</strong></div>
 <div class="stat"><span>Lap</span><strong id="lap">1 / 8</strong></div>
 <div class="stat"><span>Fastest Lap</span><strong id="fastest">—</strong></div>
-<div class="stat"><span>Status</span><strong id="status">Demo paused</strong></div>
+<div class="stat"><span>Status</span><strong id="status">Demo paused</strong></div><div class="stat"><span>Lead Change</span><strong id="leadchange">—</strong></div>
 </div>
-<div class="table-wrap"><table><thead><tr><th>Pos</th><th>Car</th><th>Driver</th><th>Last Lap</th><th>Best Lap</th><th>Laps</th><th>Gap to Leader</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>Pos</th><th>Car</th><th>Driver</th><th>Last Lap</th><th>Best Lap</th><th>Laps</th><th>Gap to Leader</th><th>Position Change</th></tr></thead><tbody id="rows"></tbody></table></div>
 <p class="note">Click “Simulate Next Lap” to advance fictional qualifying times. Ranking uses each driver's best lap (lowest time wins). Other track/division choices have no demo timing records yet.</p>
 </main>
 <script>
@@ -45,10 +45,10 @@ const initial=[
  {name:"Demo Racer B",car:"33",base:18.637},
  {name:"Demo Racer C",car:"88",base:18.912}
 ];
-let lap=0, racers=[];
+let lap=0, racers=[],previousRanks={};
 const $=id=>document.getElementById(id);
 function reset(){
- lap=0;racers=initial.map((r,i)=>({...r,best:null,last:null,laps:0,index:i}));
+ lap=0;previousRanks={};$("leadchange").textContent="—";racers=initial.map((r,i)=>({...r,best:null,last:null,laps:0,index:i}));
  render();
 }
 function advance(){
@@ -68,15 +68,22 @@ function render(){
  $("lap").textContent=supported?lap+" / 8":"—";
  $("status").textContent=!supported?"No demo session":lap>=8?"Demo finished":"Demo paused";
  const rows=$("rows");rows.replaceChildren();
- if(!supported){const tr=rows.insertRow();const td=tr.insertCell();td.colSpan=7;td.textContent="No demo timing available for this track and division."; $("fastest").textContent="—";return;}
+ if(!supported){const tr=rows.insertRow();const td=tr.insertCell();td.colSpan=8;td.textContent="No demo timing available for this track and division."; $("fastest").textContent="—";return;}
  const ordered=[...racers].sort((a,b)=>(a.best??Infinity)-(b.best??Infinity)||a.index-b.index);
  const lead=ordered[0]?.best;
  $("fastest").textContent=lead===null||lead===undefined?"—":lead.toFixed(3)+"s";
+ const nextRanks={};
  ordered.forEach((r,i)=>{
+  nextRanks[r.car]=i+1;
+  const prior=previousRanks[r.car];
+  const delta=lap<2||prior===undefined?"—":prior>i+1?"▲ "+(prior-i-1):prior<i+1?"▼ "+(i+1-prior):"—";
   const tr=rows.insertRow();
-  const vals=[String(i+1),"#"+r.car,r.name,r.last===null?"—":r.last.toFixed(3)+"s",r.best===null?"—":r.best.toFixed(3)+"s",String(r.laps),r.best===null?"—":i===0?"LEADER":"+"+(r.best-lead).toFixed(3)+"s"];
+  const vals=[String(i+1),"#"+r.car,r.name,r.last===null?"—":r.last.toFixed(3)+"s",r.best===null?"—":r.best.toFixed(3)+"s",String(r.laps),r.best===null?"—":i===0?"LEADER":"+"+(r.best-lead).toFixed(3)+"s",delta];
   vals.forEach((value,j)=>{const td=tr.insertCell();td.textContent=value;if(j===4&&i===0&&r.best!==null)td.className="fastest";});
  });
+ const oldLeader=Object.keys(previousRanks).find(car=>previousRanks[car]===1);
+ $("leadchange").textContent=lap<2?"—":oldLeader&&oldLeader!==ordered[0]?.car?"New leader #"+ordered[0].car:"No change";
+ previousRanks=nextRanks;
 }
 $("advance").addEventListener("click",advance);
 $("reset").addEventListener("click",reset);
