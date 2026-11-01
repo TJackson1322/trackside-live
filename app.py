@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template_string, send_from_directory, abort
+from flask import Flask, render_template_string, render_template, send_from_directory, abort
 from pathlib import Path
 import json
 
@@ -69,6 +69,7 @@ HTML = """
 <nav style="text-align:center; margin-bottom:30px;">
     <a href="/" style="color:white; margin-right:25px;">🏠 Home</a>
     <a href="/race-center" style="background:#ed2939; color:white; padding:12px 22px; border-radius:8px; text-decoration:none;">🏁 Race Center</a>
+    <a href="/live-timing" style="color:white; margin-left:20px;">⏱ Live Timing</a>
 </nav>
 {% if driver %}
     <div class="profile">
@@ -203,7 +204,7 @@ def race_center():
         <h2>RACE CENTER</h2>
     </header>
     <main>
-        <a href="/">← Driver Profiles</a>
+        <a href="/">← Driver Profiles</a> &nbsp; <a href="/live-timing">⏱ Live Timing Demo</a>
 
         <h2>Select Your Race</h2>
 
@@ -265,6 +266,10 @@ def race_center():
         selected_track=selected_track,
         selected_division=selected_division
     )
+
+@app.route("/live-timing")
+def live_timing():
+    return render_template("live_timing.html", tracks=race_data["tracks"], divisions=race_data["divisions"])
 
 if __name__ == "__main__":
     app.run(debug=True)
