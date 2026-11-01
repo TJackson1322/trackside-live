@@ -66,6 +66,10 @@ HTML = """
     <p class="subtitle">Driver Profiles • Racing History • Live Timing</p>
 </header>
 <main>
+<nav style="text-align:center; margin-bottom:30px;">
+    <a href="/" style="color:white; margin-right:25px;">🏠 Home</a>
+    <a href="/race-center" style="background:#ed2939; color:white; padding:12px 22px; border-radius:8px; text-decoration:none;">🏁 Race Center</a>
+</nav>
 {% if driver %}
     <div class="profile">
         <a class="back" href="/">← All Drivers</a>
