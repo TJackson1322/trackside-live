@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parent Account | TrackSide Live</title>
+<style>
+body{margin:0;background:#101116;color:#f6f6f9;font:16px Arial,sans-serif}header{background:#1b1d25;border-bottom:4px solid #ed2939;padding:28px;text-align:center}header span{color:#ff3548}main{max-width:520px;margin:30px auto;padding:0 20px}a{color:#ff5366}.panel{background:#20232c;border-radius:14px;padding:24px}label{display:block;margin:15px 0 6px}input[type=email],input[type=password]{width:100%;box-sizing:border-box;padding:13px;border-radius:8px;border:1px solid #646875;background:#12141a;color:white;font-size:16px}button{background:#ed2939;color:white;border:0;border-radius:8px;padding:12px 16px;margin:14px 8px 0 0;cursor:pointer;font-size:15px}button.secondary{background:#454b59}button:disabled{opacity:.55;cursor:wait}.muted{color:#c2c5cf;line-height:1.5}.notice{background:#302819;border:1px solid #a88b46;border-radius:8px;padding:12px}.status{white-space:pre-wrap;line-height:1.5}#signed-in{display:none}
+</style></head>
+<body><header><h1>🏁 TRACK<span>SIDE</span> LIVE</h1><p>Parent &amp; Guardian Accounts</p></header>
+<main><p><a href="/">← Home</a> · <a href="/driver-garage">Driver Garage</a></p>
+<div class="panel"><p class="notice">Development preview. Accounts are for adults 18+ only. Do not add children's personal information or confidential car setups yet. Registration is not a public launch.</p>
+<div id="signed-out"><h2>Sign in or create an account</h2>
+<form id="auth-form"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" required maxlength="254">
+<label for="password">Password (at least 8 characters)</label><input id="password" type="password" autocomplete="current-password" minlength="8" required>
+<label><input id="adult" type="checkbox"> I am 18 or older and registering as a parent or guardian.</label>
+<button type="submit" id="login">Sign in</button><button type="button" id="register" class="secondary">Create parent account</button></form>
+<button type="button" id="reset" class="secondary">Send password reset email</button></div>
+<div id="signed-in"><h2>You're signed in</h2><p id="account-email"></p><p class="muted">Your private garage dashboard is under development. No garage data entry is enabled yet.</p><button id="logout" type="button">Sign out</button></div>
+<p id="status" class="status" role="status" aria-live="polite"></p></div>
+<p class="muted">Please use a unique password. Supabase manages authentication; TrackSide Live does not store your password in its GitHub repository.</p>
+</main>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/+esm';
+const client=createClient('https://sxelydexamawmagngpte.supabase.co','sb_publishable_ohA8Rttd0Z-ziqoiByBLlQ_jqYTVLx0');
+const el=id=>document.getElementById(id), status=msg=>el('status').textContent=msg;
+const controls=['login','register','reset'];
+function busy(flag){controls.forEach(id=>el(id).disabled=flag);}
+function display(session){el('signed-in').style.display=session?'block':'none';el('signed-out').style.display=session?'none':'block';el('account-email').textContent=session?.user?.email||'';}
+client.auth.onAuthStateChange((_event,session)=>display(session));
+const {data:{session}}=await client.auth.getSession();display(session);
+el('auth-form').addEventListener('submit',async e=>{e.preventDefault();busy(true);status('');
+try{const {error}=await client.auth.signInWithPassword({email:el('email').value.trim(),password:el('password').value});if(error)throw error;status('Signed in successfully.');el('password').value='';}
+catch(e){status(e.message||'Sign in failed.');}finally{busy(false);}});
+el('register').addEventListener('click',async()=>{if(!el('adult').checked){status('Parent registration is only for adults 18 or older.');return;}if(!el('email').reportValidity()||!el('password').reportValidity())return;busy(true);status('');
+try{const {data,error}=await client.auth.signUp({email:el('email').value.trim(),password:el('password').value,emailRedirectTo:window.location.origin+'/parent-login'});if(error)throw error;status(data.session?'Account created and signed in.':'Check your email for a confirmation link before signing in.');el('password').value='';}
+catch(e){status(e.message||'Registration failed.');}finally{busy(false);}});
+el('reset').addEventListener('click',async()=>{if(!el('email').reportValidity())return;busy(true);status('');
+try{const {error}=await client.auth.resetPasswordForEmail(el('email').value.trim(),{redirectTo:window.location.origin+'/parent-login'});if(error)throw error;status('If that email has an account, a reset email will be sent.');}catch(e){status(e.message||'Unable to request reset.');}finally{busy(false);}});
+el('logout').addEventListener('click',async()=>{const {error}=await client.auth.signOut();status(error?error.message:'Signed out.');});
+</script></body></html>
