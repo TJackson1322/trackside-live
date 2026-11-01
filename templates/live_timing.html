@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Timing Demo | TrackSide Live</title>
+<style>
+:root{color-scheme:dark;font-family:Arial,Helvetica,sans-serif}*{box-sizing:border-box}
+body{margin:0;background:#101116;color:#f7f7fa}header{background:#1b1d25;border-bottom:4px solid #ed2939;padding:24px;text-align:center}
+h1{margin:0;font-size:clamp(26px,5vw,42px)}.accent{color:#ff3548}main{max-width:1100px;margin:auto;padding:28px 18px}
+nav a{color:#eee;margin-right:18px;text-decoration:none}nav a:hover{text-decoration:underline}
+.demo{background:#3a2e19;border:1px solid #a77720;color:#ffe3a1;padding:13px;border-radius:8px;margin:20px 0}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:20px 0}label{display:grid;gap:7px;color:#c7c8d0;font-size:14px}
+select,button{padding:11px 14px;background:#262a35;border:1px solid #555b69;color:white;border-radius:7px;font-size:15px}
+button{background:#ed2939;border:0;cursor:pointer;font-weight:bold}button.secondary{background:#353a48}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:20px 0}.stat{background:#20232c;padding:17px;border-radius:10px}
+.stat span{display:block;color:#bfc1c9;font-size:13px;margin-bottom:7px}.stat strong{font-size:21px}
+.table-wrap{overflow-x:auto;background:#20232c;border-radius:10px}table{width:100%;border-collapse:collapse;min-width:670px}th,td{padding:15px;text-align:left;border-bottom:1px solid #383c47}th{color:#ff5666;font-size:13px;text-transform:uppercase}tr:last-child td{border-bottom:0}.fastest{color:#7ce2aa;font-weight:bold}
+.note{color:#bfc1c9;font-size:13px;line-height:1.6}.badge{display:inline-block;background:#773f18;color:#ffe3a1;padding:4px 9px;border-radius:6px;font-size:12px;font-weight:bold}
+</style>
+</head>
+<body>
+<header><h1>🏁 TRACK<span class="accent">SIDE</span> LIVE</h1><p>LIVE TIMING DASHBOARD</p></header>
+<main>
+<nav><a href="/">🏠 Home</a><a href="/race-center">🏁 Race Center</a><a href="/live-timing">⏱ Live Timing</a></nav>
+<div class="demo"><strong>SIMULATED DEMO — NOT LIVE TRACK DATA.</strong> All drivers, lap times, positions, and session updates on this page are fictional. No timing provider is connected.</div>
+<h2>Timing & Scoring <span class="badge">DEMO</span></h2>
+<div class="controls">
+<label>Track<select id="track">{% for track in tracks %}<option value="{{ track.id }}">{{ track.name }}</option>{% endfor %}</select></label>
+<label>Division<select id="division">{% for division in divisions %}<option value="{{ division }}">{{ division }}</option>{% endfor %}</select></label>
+<button id="advance" type="button">Simulate Next Lap</button>
+<button id="reset" class="secondary" type="button">Reset Demo</button>
+</div>
+<div class="stats">
+<div class="stat"><span>Session</span><strong id="session">Demo Qualifying</strong></div>
+<div class="stat"><span>Lap</span><strong id="lap">1 / 8</strong></div>
+<div class="stat"><span>Fastest Lap</span><strong id="fastest">—</strong></div>
+<div class="stat"><span>Status</span><strong id="status">Demo paused</strong></div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Pos</th><th>Car</th><th>Driver</th><th>Last Lap</th><th>Best Lap</th><th>Laps</th><th>Gap to Leader</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p class="note">Click “Simulate Next Lap” to advance fictional qualifying times. Ranking uses each driver's best lap (lowest time wins). Other track/division choices have no demo timing records yet.</p>
+</main>
+<script>
+const initial=[
+ {name:"Demo Racer A",car:"07",base:18.421},
+ {name:"Demo Racer B",car:"33",base:18.637},
+ {name:"Demo Racer C",car:"88",base:18.912}
+];
+let lap=0, racers=[];
+const $=id=>document.getElementById(id);
+function reset(){
+ lap=0;racers=initial.map((r,i)=>({...r,best:null,last:null,laps:0,index:i}));
+ render();
+}
+function advance(){
+ if($("track").value!=="salem"||$("division").value!=="Legends")return;
+ if(lap>=8)return;
+ lap++;
+ racers.forEach((r,i)=>{
+   // Deterministic sample lap times; no real race data or live feed.
+   const value=Number((r.base + Math.sin(lap*1.7+i*2.3)*0.31 + (lap%3)*0.04).toFixed(3));
+   r.last=value;r.best=r.best===null?value:Math.min(r.best,value);r.laps=lap;
+ });
+ render();
+}
+function render(){
+ const supported=$("track").value==="salem"&&$("division").value==="Legends";
+ $("advance").disabled=!supported||lap>=8;
+ $("lap").textContent=supported?lap+" / 8":"—";
+ $("status").textContent=!supported?"No demo session":lap>=8?"Demo finished":"Demo paused";
+ const rows=$("rows");rows.replaceChildren();
+ if(!supported){const tr=rows.insertRow();const td=tr.insertCell();td.colSpan=7;td.textContent="No demo timing available for this track and division."; $("fastest").textContent="—";return;}
+ const ordered=[...racers].sort((a,b)=>(a.best??Infinity)-(b.best??Infinity)||a.index-b.index);
+ const lead=ordered[0]?.best;
+ $("fastest").textContent=lead===null||lead===undefined?"—":lead.toFixed(3)+"s";
+ ordered.forEach((r,i)=>{
+  const tr=rows.insertRow();
+  const vals=[String(i+1),"#"+r.car,r.name,r.last===null?"—":r.last.toFixed(3)+"s",r.best===null?"—":r.best.toFixed(3)+"s",String(r.laps),r.best===null?"—":i===0?"LEADER":"+"+(r.best-lead).toFixed(3)+"s"];
+  vals.forEach((value,j)=>{const td=tr.insertCell();td.textContent=value;if(j===4&&i===0&&r.best!==null)td.className="fastest";});
+ });
+}
+$("advance").addEventListener("click",advance);
+$("reset").addEventListener("click",reset);
+$("track").addEventListener("change",reset);
+$("division").addEventListener("change",reset);
+reset();
+</script>
+</body></html>
