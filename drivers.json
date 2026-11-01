@@ -7,7 +7,7 @@
       "car_number": "07",
       "divisions": ["Legends - Young Lions"],
       "profile_photo": "driver_photos/Maddaxrichie.jpg",
-      "achievements": [],
+      "achievements": [{"year": 2026, "title": "KKR Points Champion", "location": "KKR series", "source_status": "Family reported"}, {"year": 2025, "title": "Salem Speedway Legends Points Champion", "location": "Salem Speedway, Indiana", "source_status": "Family reported"}],
       "race_history": []
     },
     {
