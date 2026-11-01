@@ -79,6 +79,7 @@ HTML = """
     <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a>
     <a href="/verified-results" style="color:white; margin-left:20px;">✓ Verified Results</a>
     <a href="/driver-garage" style="color:white; margin-left:20px;">🔒 Driver Garage</a>
+    <a href="/parent-login" style="color:white; margin-left:20px;">👤 Parent Login</a>
 </nav>
 {% if driver %}
     <div class="profile">
@@ -391,6 +392,11 @@ def verified_results_page():
         results.append({**result, "driver_name": driver["name"]})
     results.sort(key=lambda result: result.get("date", ""), reverse=True)
     return render_template("verified_results.html", results=results, drivers=drivers, selected_driver=selected_driver)
+
+
+@app.route("/parent-login")
+def parent_login():
+    return render_template("parent_login.html")
 
 
 @app.route("/driver-garage")
