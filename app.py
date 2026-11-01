@@ -89,8 +89,19 @@ HTML = """
         {% else %}
             <p>Achievements coming soon.</p>
         {% endfor %}
+        <h3>📊 Driver Statistics <span style="font-size:13px;color:#ffdb92;">DEMO ONLY</span></h3>
+        <p style="color:#bfc1c9;font-size:14px;">Statistics below are calculated from fictional demonstration race records, not verified career totals.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;">
+            {% for label, value in [('Starts', stats.starts), ('Wins', stats.wins), ('Podiums', stats.podiums), ('Top 5s', stats.top_fives), ('Avg Finish', stats.avg_finish)] %}
+            <div style="background:#20232c;border-radius:10px;padding:15px;text-align:center;">
+                <div style="color:#bfc1c9;font-size:13px;">{{ label }}</div>
+                <strong style="font-size:25px;">{{ value }}</strong>
+            </div>
+            {% endfor %}
+        </div>
         <h3>🏎️ Race History</h3>
-        <p>Race history coming soon.</p>
+        <p><a class="back" href="{{ url_for('race_history_page', driver=driver.driver_id) }}">View {{ driver.name }}'s demonstration race history →</a></p>
+        <p style="color:#bfc1c9;font-size:13px;">Career statistics will become available when verified racing results are added.</p>
     </div>
 {% else %}
     <h2>Featured Drivers</h2>
@@ -126,7 +137,23 @@ def driver_profile(driver_id):
     )
     if driver is None:
         abort(404)
-    return render_template_string(HTML, drivers=drivers, driver=driver)
+    # Count only clearly labeled demonstration races; never imply these are career totals.
+    finishes = [
+        result["finish"]
+        for race in history_data
+        if race.get("status") == "DEMO"
+        for result in race.get("results", [])
+        if result.get("driver_id") == driver_id
+    ]
+    starts = len(finishes)
+    stats = {
+        "starts": starts,
+        "wins": sum(finish == 1 for finish in finishes),
+        "podiums": sum(finish <= 3 for finish in finishes),
+        "top_fives": sum(finish <= 5 for finish in finishes),
+        "avg_finish": f"{sum(finishes) / starts:.1f}" if starts else "—",
+    }
+    return render_template_string(HTML, drivers=drivers, driver=driver, stats=stats)
 
 @app.route("/photos/<path:filename>")
 def driver_photo(filename):
