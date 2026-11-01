@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Race History | TrackSide Live</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101116;color:#f7f7fa;font-family:Arial,sans-serif}header{padding:28px 18px;text-align:center;background:#1b1d25;border-bottom:4px solid #ed2939}header h1{margin:0;font-size:clamp(28px,5vw,44px)}header span{color:#ff3548}main{max-width:1080px;margin:auto;padding:26px 18px}nav{display:flex;gap:20px;flex-wrap:wrap}a{color:#ff5265}nav a{color:white;text-decoration:none}.warning{padding:14px;background:#392d19;border:1px solid #b58b35;color:#ffe4a6;border-radius:8px;margin:22px 0}.filters{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:20px 0}label{display:grid;gap:6px;color:#c9cbd3;font-size:14px}select,input,button{font-size:15px;border-radius:7px;padding:11px 12px;color:white;background:#242834;border:1px solid #535865}button{background:#ed2939;border:0;cursor:pointer;font-weight:bold}.card{background:#20232c;padding:20px;border-radius:12px;margin:16px 0}.meta{color:#bfc1c9}.tag{color:#ffe4a6;background:#6a431d;border-radius:5px;padding:4px 8px;font-size:12px}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:620px}td,th{text-align:left;padding:12px;border-bottom:1px solid #414552}th{color:#ff5666}.laps{color:#c7c9d1;font-size:14px}.empty{background:#20232c;padding:25px;border-radius:10px}
+</style></head><body>
+<header><h1>🏁 TRACK<span>SIDE</span> LIVE</h1><p>RACE HISTORY</p></header>
+<main>
+<nav><a href="/">🏠 Home</a><a href="/race-center">🏁 Race Center</a><a href="/live-timing">⏱ Live Timing</a><a href="/race-history">📅 Race History</a></nav>
+<div class="warning"><strong>DEMONSTRATION DATA ONLY.</strong> All dates, finishing positions and lap times shown below are invented to test the app. They are not verified racing records or official results.</div>
+<h2>Search Past Races</h2>
+<form class="filters" method="get">
+<label>Track<select name="track"><option value="">All tracks</option>{% for track in tracks %}<option value="{{ track.id }}" {% if selected_track == track.id %}selected{% endif %}>{{ track.name }}</option>{% endfor %}</select></label>
+<label>Driver<select name="driver"><option value="">All drivers</option>{% for driver in drivers %}<option value="{{ driver.driver_id }}" {% if selected_driver == driver.driver_id %}selected{% endif %}>#{{ driver.car_number }} {{ driver.name }}</option>{% endfor %}</select></label>
+<label>Date<input type="date" name="date" value="{{ selected_date }}"></label>
+<button type="submit">Search History</button>
+<a href="/race-history" style="padding:11px">Clear filters</a>
+</form>
+<p class="meta">{{ races|length }} demonstration race{{ '' if races|length == 1 else 's' }} found</p>
+{% for race in races %}
+<section class="card">
+<h3>{{ race.track_name }} <span class="tag">DEMO</span></h3>
+<p class="meta">{{ race.date }} · {{ race.division }} · {{ race.session_type }}</p>
+<div class="scroll"><table><thead><tr><th>Finish</th><th>Driver</th><th>Start</th><th>Best Lap</th><th>Lap-by-lap Times</th></tr></thead><tbody>
+{% for result in race.results %}
+<tr><td>P{{ result.finish }}</td><td><a href="{{ url_for('driver_profile',driver_id=result.driver_id) }}">#{{ result.car_number }} {{ result.driver_name }}</a></td><td>P{{ result.start }}</td><td>{{ '%.3f'|format(result.best_lap_seconds) }}s</td><td class="laps">{% for lap in result.laps %}L{{ loop.index }}: {{ '%.3f'|format(lap) }}s{% if not loop.last %} · {% endif %}{% endfor %}</td></tr>
+{% endfor %}
+</tbody></table></div>
+</section>
+{% else %}
+<div class="empty">No demonstration races match your filters. Clear the filters to see the available examples.</div>
+{% endfor %}
+</main></body></html>
