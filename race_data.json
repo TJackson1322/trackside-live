@@ -1,0 +1,61 @@
+
+{
+  "tracks": [
+    {
+      "id": "salem",
+      "name": "Salem Speedway",
+      "location": "Salem, Indiana",
+      "track_type": "Oval"
+    },
+    {
+      "id": "indianapolis",
+      "name": "Indianapolis Motor Speedway",
+      "location": "Speedway, Indiana",
+      "track_type": "Oval / Road Course"
+    },
+    {
+      "id": "las-vegas",
+      "name": "Las Vegas Motor Speedway",
+      "location": "Las Vegas, Nevada",
+      "track_type": "Oval / Road Course"
+    }
+  ],
+  "divisions": [
+    "Legends",
+    "Bandoleros",
+    "Late Models",
+    "Modifieds",
+    "Sprint Cars",
+    "Stock Cars",
+    "Other"
+  ],
+  "sessions": [
+    {
+      "id": "demo-salem-legends",
+      "track_id": "salem",
+      "division": "Legends",
+      "session_type": "Qualifying",
+      "status": "DEMO",
+      "results": [
+        {
+          "position": 1,
+          "driver": "Sample Driver A",
+          "car_number": "07",
+          "best_lap_seconds": 18.421
+        },
+        {
+          "position": 2,
+          "driver": "Sample Driver B",
+          "car_number": "33",
+          "best_lap_seconds": 18.637
+        },
+        {
+          "position": 3,
+          "driver": "Sample Driver C",
+          "car_number": "88",
+          "best_lap_seconds": 18.912
+        }
+      ]
+    }
+  ]
+}
