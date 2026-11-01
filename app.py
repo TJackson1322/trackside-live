@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template_string, render_template, send_from_directory, abort
+from flask import Flask, render_template_string, render_template, send_from_directory, abort, request
 from pathlib import Path
 import json
 
@@ -10,6 +10,9 @@ with (BASE / "drivers.json").open(encoding="utf-8") as f:
     drivers = json.load(f)["drivers"]
 with (BASE / "race_data.json").open(encoding="utf-8") as f:
     race_data = json.load(f)
+with (BASE / "race_history.json").open(encoding="utf-8") as f:
+    history_data = json.load(f)["races"]
+
 HTML = """
 <!DOCTYPE html>
 <html>
@@ -70,6 +73,7 @@ HTML = """
     <a href="/" style="color:white; margin-right:25px;">🏠 Home</a>
     <a href="/race-center" style="background:#ed2939; color:white; padding:12px 22px; border-radius:8px; text-decoration:none;">🏁 Race Center</a>
     <a href="/live-timing" style="color:white; margin-left:20px;">⏱ Live Timing</a>
+    <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a>
 </nav>
 {% if driver %}
     <div class="profile">
@@ -204,7 +208,7 @@ def race_center():
         <h2>RACE CENTER</h2>
     </header>
     <main>
-        <a href="/">← Driver Profiles</a> &nbsp; <a href="/live-timing">⏱ Live Timing Demo</a>
+        <a href="/">← Driver Profiles</a> &nbsp; <a href="/live-timing">⏱ Live Timing Demo</a> &nbsp; <a href="/race-history">📅 Race History</a>
 
         <h2>Select Your Race</h2>
 
@@ -270,6 +274,53 @@ def race_center():
 @app.route("/live-timing")
 def live_timing():
     return render_template("live_timing.html", tracks=race_data["tracks"], divisions=race_data["divisions"])
+
+@app.route("/race-history")
+def race_history_page():
+    selected_track = request.args.get("track", "")
+    selected_driver = request.args.get("driver", "")
+    selected_date = request.args.get("date", "")
+
+    tracks_by_id = {track["id"]: track for track in race_data["tracks"]}
+    drivers_by_id = {driver["driver_id"]: driver for driver in drivers}
+    matching_races = []
+
+    for race in history_data:
+        if selected_track and race["track_id"] != selected_track:
+            continue
+        if selected_date and race["date"] != selected_date:
+            continue
+        results = []
+        for result in race["results"]:
+            if selected_driver and result["driver_id"] != selected_driver:
+                continue
+            driver = drivers_by_id.get(result["driver_id"])
+            if not driver:
+                continue
+            results.append({
+                **result,
+                "driver_name": driver["name"],
+                "car_number": driver["car_number"]
+            })
+        if not results:
+            continue
+        matching_races.append({
+            **race,
+            "track_name": tracks_by_id.get(race["track_id"], {}).get("name", race["track_id"]),
+            "results": sorted(results, key=lambda result: result["finish"])
+        })
+
+    matching_races.sort(key=lambda race: race["date"], reverse=True)
+    return render_template(
+        "race_history.html",
+        races=matching_races,
+        tracks=race_data["tracks"],
+        drivers=drivers,
+        selected_track=selected_track,
+        selected_driver=selected_driver,
+        selected_date=selected_date
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
