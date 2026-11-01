@@ -1,4 +1,50 @@
 {
-  "results": [],
+  "results": [
+    {
+      "id": "inex-salem-2026-08-29-maddax",
+      "driver_id": "maddax-richie-07",
+      "date": "2026-08-29",
+      "event_name": "INEX Salem Speedway points breakdown",
+      "track": "Salem Speedway",
+      "division": "Legends — Young Lions (Asphalt)",
+      "record_type": "INEX class points position",
+      "finish": 5,
+      "points": 88,
+      "source_name": "INEX Series official race points breakdown",
+      "source_url": "https://www.inexseries.com/handler.cfm/template,race/cat_id,62825?race=2532",
+      "verified_on": "2026-11-01",
+      "note": "INEX class ranking and points; not independently verified feature-race finish or lap timing."
+    },
+    {
+      "id": "inex-salem-2026-09-19-maddax",
+      "driver_id": "maddax-richie-07",
+      "date": "2026-09-19",
+      "event_name": "INEX Salem Speedway points breakdown",
+      "track": "Salem Speedway",
+      "division": "Legends — Young Lions (Asphalt)",
+      "record_type": "INEX class points position",
+      "finish": 2,
+      "points": 97,
+      "source_name": "INEX Series official race points breakdown",
+      "source_url": "https://www.inexseries.com/handler.cfm/template,race/cat_id,62825?race=2533",
+      "verified_on": "2026-11-01",
+      "note": "INEX class ranking and points; not independently verified feature-race finish or lap timing."
+    },
+    {
+      "id": "inex-salem-2026-10-03-maddax",
+      "driver_id": "maddax-richie-07",
+      "date": "2026-10-03",
+      "event_name": "INEX Salem Speedway points breakdown",
+      "track": "Salem Speedway",
+      "division": "Legends — Young Lions (Asphalt)",
+      "record_type": "INEX class points position",
+      "finish": 1,
+      "points": 100,
+      "source_name": "INEX Series official race points breakdown",
+      "source_url": "https://www.inexseries.com/handler.cfm/template,race/cat_id,62825?race=2534",
+      "verified_on": "2026-11-01",
+      "note": "INEX class ranking and points; not independently verified feature-race finish or lap timing."
+    }
+  ],
   "source_policy": "Only add results after checking a direct source, its event/date/driver/division, and permission to reuse the data. Include source_url and verified_on. Do not add demo data here."
 }
