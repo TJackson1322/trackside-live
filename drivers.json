@@ -1,0 +1,47 @@
+
+{
+  "drivers": [
+    {
+      "driver_id": "maddax-richie-07",
+      "name": "Maddax Richie",
+      "car_number": "07",
+      "divisions": ["Legends - Young Lions"],
+      "profile_photo": "driver_photos/Maddaxrichie.jpg",
+      "achievements": [],
+      "race_history": []
+    },
+    {
+      "driver_id": "chase-bohanon-88",
+      "name": "Chase Bohanon",
+      "car_number": "88",
+      "divisions": ["Outlaw Bandoleros"],
+      "profile_photo": "driver_photos/Chasebohanon.jpg",
+      "achievements": [
+        {
+          "year": 2026,
+          "title": "Outlaw Bandoleros Road Course World Champion",
+          "location": "Las Vegas, Nevada"
+        }
+      ],
+      "race_history": []
+    },
+    {
+      "driver_id": "clayton-bohanon-33",
+      "name": "Clayton Bohanon",
+      "car_number": "33",
+      "divisions": ["Legends - Semi-Pro"],
+      "profile_photo": "driver_photos/ClaytonBohanon.jpg",
+      "achievements": [],
+      "race_history": []
+    },
+    {
+      "driver_id": "cali-bohanon-7",
+      "name": "Cali Bohanon",
+      "car_number": "7",
+      "divisions": ["Bandoleros"],
+      "profile_photo": "driver_photos/CaliBohanon.jpg",
+      "achievements": [],
+      "race_history": []
+    }
+  ]
+}
