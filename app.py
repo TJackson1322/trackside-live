@@ -13,6 +13,9 @@ with (BASE / "race_data.json").open(encoding="utf-8") as f:
 with (BASE / "race_history.json").open(encoding="utf-8") as f:
     history_data = json.load(f)["races"]
 
+with (BASE / "verified_results.json").open(encoding="utf-8") as f:
+    verified_results = json.load(f)["results"]
+
 HTML = """
 <!DOCTYPE html>
 <html>
@@ -73,7 +76,8 @@ HTML = """
     <a href="/" style="color:white; margin-right:25px;">🏠 Home</a>
     <a href="/race-center" style="background:#ed2939; color:white; padding:12px 22px; border-radius:8px; text-decoration:none;">🏁 Race Center</a>
     <a href="/live-timing" style="color:white; margin-left:20px;">⏱ Live Timing</a>
-    <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a>
+    <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a> &nbsp; <a href="/verified-results">✓ Verified Results</a>
+    <a href="/verified-results" style="color:white; margin-left:20px;">✓ Verified Results</a>
 </nav>
 {% if driver %}
     <div class="profile">
@@ -99,6 +103,7 @@ HTML = """
             </div>
             {% endfor %}
         </div>
+        <p><a class="back" href="{{ url_for('verified_results_page', driver=driver.driver_id) }}">View source-backed results →</a></p>
         <h3>🏎️ Race History</h3>
         <p><a class="back" href="{{ url_for('race_history_page', driver=driver.driver_id) }}">View {{ driver.name }}'s demonstration race history →</a></p>
         <p style="color:#bfc1c9;font-size:13px;">Career statistics will become available when verified racing results are added.</p>
@@ -347,6 +352,22 @@ def race_history_page():
         selected_driver=selected_driver,
         selected_date=selected_date
     )
+
+
+@app.route("/verified-results")
+def verified_results_page():
+    selected_driver = request.args.get("driver", "")
+    drivers_by_id = {driver["driver_id"]: driver for driver in drivers}
+    results = []
+    for result in verified_results:
+        if selected_driver and result.get("driver_id") != selected_driver:
+            continue
+        driver = drivers_by_id.get(result.get("driver_id"))
+        if not driver or not result.get("source_url") or not result.get("verified_on"):
+            continue
+        results.append({**result, "driver_name": driver["name"]})
+    results.sort(key=lambda result: result.get("date", ""), reverse=True)
+    return render_template("verified_results.html", results=results, drivers=drivers, selected_driver=selected_driver)
 
 
 if __name__ == "__main__":
