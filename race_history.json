@@ -1,0 +1,70 @@
+{
+  "races": [
+    {
+      "id": "demo-salem-2026-01",
+      "date": "2026-09-19",
+      "track_id": "salem",
+      "division": "Legends",
+      "session_type": "Feature Race",
+      "status": "DEMO",
+      "results": [
+        {
+          "driver_id": "maddax-richie-07",
+          "finish": 2,
+          "start": 1,
+          "best_lap_seconds": 18.42,
+          "laps": [
+            18.811,
+            18.59,
+            18.42,
+            18.631
+          ]
+        },
+        {
+          "driver_id": "clayton-bohanon-33",
+          "finish": 1,
+          "start": 3,
+          "best_lap_seconds": 18.395,
+          "laps": [
+            18.704,
+            18.395,
+            18.51,
+            18.477
+          ]
+        }
+      ]
+    },
+    {
+      "id": "demo-vegas-2026-02",
+      "date": "2026-10-24",
+      "track_id": "las-vegas",
+      "division": "Bandoleros",
+      "session_type": "Feature Race",
+      "status": "DEMO",
+      "results": [
+        {
+          "driver_id": "chase-bohanon-88",
+          "finish": 1,
+          "start": 2,
+          "best_lap_seconds": 42.131,
+          "laps": [
+            42.54,
+            42.131,
+            42.312
+          ]
+        },
+        {
+          "driver_id": "cali-bohanon-7",
+          "finish": 2,
+          "start": 1,
+          "best_lap_seconds": 42.301,
+          "laps": [
+            42.72,
+            42.301,
+            42.599
+          ]
+        }
+      ]
+    }
+  ]
+}
