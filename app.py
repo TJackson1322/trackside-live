@@ -78,6 +78,7 @@ HTML = """
     <a href="/live-timing" style="color:white; margin-left:20px;">⏱ Live Timing</a>
     <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a>
     <a href="/verified-results" style="color:white; margin-left:20px;">✓ Verified Results</a>
+    <a href="/driver-garage" style="color:white; margin-left:20px;">🔒 Driver Garage</a>
 </nav>
 {% if driver %}
     <div class="profile">
@@ -86,7 +87,8 @@ HTML = """
         <img src="{{ url_for('driver_photo', filename=driver.profile_photo.split('/')[-1]) }}"
              alt="{{ driver.name }}">
         <p class="division">{{ driver.divisions | join(', ') }}</p>
-        <h3>🏆 Achievements</h3>
+        <h3>🏆 Career Timeline</h3>
+        <p style="color:#bfc1c9;font-size:13px;">Reported milestones, shown by season. Additional track records and sponsors can be added when provided.</p>
         {% for achievement in driver.achievements %}
             <p>{{ achievement.year }} — {{ achievement.title }}</p>
             <p>{{ achievement.location }}{% if achievement.source_status %} <span style="color:#bfc1c9;font-size:12px;">({{ achievement.source_status }})</span>{% endif %}</p>
@@ -115,6 +117,7 @@ HTML = """
             {% endfor %}
         </div>
         <p><a class="back" href="{{ url_for('verified_results_page', driver=driver.driver_id) }}">View source-backed results →</a></p>
+        <p><a class="back" href="/driver-garage">🔒 Driver Garage — prototype &amp; privacy information →</a></p>
         <h3>🏎️ Race History</h3>
         <p><a class="back" href="{{ url_for('race_history_page', driver=driver.driver_id) }}">View {{ driver.name }}'s demonstration race history →</a></p>
         <p style="color:#bfc1c9;font-size:13px;">Career statistics will become available when verified racing results are added.</p>
@@ -388,6 +391,12 @@ def verified_results_page():
         results.append({**result, "driver_name": driver["name"]})
     results.sort(key=lambda result: result.get("date", ""), reverse=True)
     return render_template("verified_results.html", results=results, drivers=drivers, selected_driver=selected_driver)
+
+
+@app.route("/driver-garage")
+def driver_garage():
+    # Informational prototype only. Never accept private setup submissions without auth/storage.
+    return render_template("driver_garage.html")
 
 
 if __name__ == "__main__":
