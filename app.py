@@ -76,7 +76,7 @@ HTML = """
     <a href="/" style="color:white; margin-right:25px;">🏠 Home</a>
     <a href="/race-center" style="background:#ed2939; color:white; padding:12px 22px; border-radius:8px; text-decoration:none;">🏁 Race Center</a>
     <a href="/live-timing" style="color:white; margin-left:20px;">⏱ Live Timing</a>
-    <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a> &nbsp; <a href="/verified-results">✓ Verified Results</a>
+    <a href="/race-history" style="color:white; margin-left:20px;">📅 Race History</a>
     <a href="/verified-results" style="color:white; margin-left:20px;">✓ Verified Results</a>
 </nav>
 {% if driver %}
@@ -89,10 +89,21 @@ HTML = """
         <h3>🏆 Achievements</h3>
         {% for achievement in driver.achievements %}
             <p>{{ achievement.year }} — {{ achievement.title }}</p>
-            <p>{{ achievement.location }}</p>
+            <p>{{ achievement.location }}{% if achievement.source_status %} <span style="color:#bfc1c9;font-size:12px;">({{ achievement.source_status }})</span>{% endif %}</p>
         {% else %}
             <p>Achievements coming soon.</p>
         {% endfor %}
+        <h3>🏁 Source-backed Racing Statistics</h3>
+        <p style="color:#bfc1c9;font-size:14px;">INEX points records are separate from race finishes. These are recorded event points, not a complete season total or career statistics.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;">
+            {% for label, value in [('INEX Records', verified_stats.records), ('Recorded Points', verified_stats.points), ('Championships', verified_stats.championships)] %}
+            <div style="background:#20232c;border-radius:10px;padding:15px;text-align:center;">
+                <div style="color:#bfc1c9;font-size:13px;">{{ label }}</div>
+                <strong style="font-size:25px;">{{ value }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+        <p style="color:#bfc1c9;font-size:13px;">Championships are family-reported until independently sourced. Verified race starts, wins, podiums and average finish are not available yet.</p>
         <h3>📊 Driver Statistics <span style="font-size:13px;color:#ffdb92;">DEMO ONLY</span></h3>
         <p style="color:#bfc1c9;font-size:14px;">Statistics below are calculated from fictional demonstration race records, not verified career totals.</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;">
@@ -158,7 +169,16 @@ def driver_profile(driver_id):
         "top_fives": sum(finish <= 5 for finish in finishes),
         "avg_finish": f"{sum(finishes) / starts:.1f}" if starts else "—",
     }
-    return render_template_string(HTML, drivers=drivers, driver=driver, stats=stats)
+    points_records = [
+        item for item in verified_results
+        if item.get("driver_id") == driver_id and item.get("record_type") == "INEX class points position"
+    ]
+    verified_stats = {
+        "records": len(points_records),
+        "points": sum(item.get("points", 0) for item in points_records),
+        "championships": sum("champion" in a.get("title", "").lower() for a in driver.get("achievements", [])),
+    }
+    return render_template_string(HTML, drivers=drivers, driver=driver, stats=stats, verified_stats=verified_stats)
 
 @app.route("/photos/<path:filename>")
 def driver_photo(filename):
