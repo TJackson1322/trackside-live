@@ -123,5 +123,144 @@ def driver_profile(driver_id):
 def driver_photo(filename):
     return send_from_directory(BASE / "driver_photos", filename)
 
+@app.route("/race-center")
+def race_center():
+    from flask import request
+
+    selected_track = request.args.get("track", "salem")
+    selected_division = request.args.get("division", "Legends")
+
+    tracks = race_data["tracks"]
+    divisions = race_data["divisions"]
+
+    sessions = [
+        session for session in race_data["sessions"]
+        if session["track_id"] == selected_track
+        and session["division"] == selected_division
+    ]
+
+    page = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>TrackSide Live - Race Center</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                background: #101116;
+                color: white;
+                font-family: Arial, sans-serif;
+                margin: 0;
+            }
+            header {
+                background: #1b1d25;
+                padding: 25px;
+                text-align: center;
+                border-bottom: 4px solid #ed2939;
+            }
+            main {
+                max-width: 1000px;
+                margin: auto;
+                padding: 30px 20px;
+            }
+            a { color: #ff3548; }
+            select, button {
+                padding: 12px;
+                margin: 8px;
+                border-radius: 6px;
+                font-size: 16px;
+            }
+            button {
+                background: #ed2939;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 25px;
+            }
+            th, td {
+                padding: 15px;
+                border-bottom: 1px solid #444;
+                text-align: left;
+            }
+            th { color: #ff3548; }
+            .demo {
+                color: #ffcc66;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+    <header>
+        <h1>🏁 TRACKSIDE LIVE</h1>
+        <h2>RACE CENTER</h2>
+    </header>
+    <main>
+        <a href="/">← Driver Profiles</a>
+
+        <h2>Select Your Race</h2>
+
+        <form method="get">
+            <select name="track">
+                {% for track in tracks %}
+                <option value="{{ track.id }}"
+                    {% if track.id == selected_track %}selected{% endif %}>
+                    {{ track.name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <select name="division">
+                {% for division in divisions %}
+                <option value="{{ division }}"
+                    {% if division == selected_division %}selected{% endif %}>
+                    {{ division }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">View Results</button>
+        </form>
+
+        {% for session in sessions %}
+            <h2>{{ session.session_type }} Results</h2>
+            <p class="demo">DEMONSTRATION DATA — NOT REAL RACE RESULTS</p>
+
+            <table>
+                <tr>
+                    <th>Position</th>
+                    <th>Car #</th>
+                    <th>Driver</th>
+                    <th>Best Lap</th>
+                </tr>
+                {% for result in session.results %}
+                <tr>
+                    <td>{{ result.position }}</td>
+                    <td>#{{ result.car_number }}</td>
+                    <td>{{ result.driver }}</td>
+                    <td>{{ "%.3f"|format(result.best_lap_seconds) }} sec</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No race results available for this selection yet.</p>
+        {% endfor %}
+    </main>
+    </body>
+    </html>
+    """
+
+    return render_template_string(
+        page,
+        tracks=tracks,
+        divisions=divisions,
+        sessions=sessions,
+        selected_track=selected_track,
+        selected_division=selected_division
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
