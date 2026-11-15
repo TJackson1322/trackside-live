@@ -152,6 +152,10 @@ class LeaderboardAVL:
         self._root = _insert(self._root, (best_lap_seconds, driver_id))
         self._by_driver[driver_id] = best_lap_seconds
 
+    def best_time(self, driver_id: str) -> Optional[float]:
+        """Return the stored time for a driver using the secondary index."""
+        return self._by_driver.get(driver_id)
+
     def remove(self, driver_id: str) -> bool:
         previous = self._by_driver.pop(driver_id, None)
         if previous is None:
