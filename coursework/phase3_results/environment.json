@@ -1,0 +1,12 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "machine": "x86_64",
+  "processor": "",
+  "timing_trials": 5,
+  "memory_trials": 1,
+  "warm_rankings_per_trial": 100,
+  "baseline_commit": "76fdb1a2d46c5cf97004c5778847146f621ef5a8",
+  "measurement_location": "Assistant execution environment",
+  "memory_scope": "tracemalloc additional Python allocations excluding prebuilt input"
+}

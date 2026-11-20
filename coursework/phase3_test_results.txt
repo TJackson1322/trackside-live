@@ -1,0 +1,25 @@
+test_avl_ties (test_phase1.TestPhase1.test_avl_ties) ... ok
+test_avl_update_remove_and_sort (test_phase1.TestPhase1.test_avl_update_remove_and_sort) ... ok
+test_hash_lookup (test_phase1.TestPhase1.test_hash_lookup) ... ok
+test_heap (test_phase1.TestPhase1.test_heap) ... ok
+test_invalid_laps_leave_results_unchanged (test_phase2.TestRaceSession.test_invalid_laps_leave_results_unchanged) ... ok
+test_lookup_and_empty_results (test_phase2.TestRaceSession.test_lookup_and_empty_results) ... ok
+test_reject_duplicate_and_blank_driver_ids (test_phase2.TestRaceSession.test_reject_duplicate_and_blank_driver_ids) ... ok
+test_tie_and_repeat_lap_keep_one_ranking_per_driver (test_phase2.TestRaceSession.test_tie_and_repeat_lap_keep_one_ranking_per_driver) ... ok
+test_update_only_when_lap_is_faster (test_phase2.TestRaceSession.test_update_only_when_lap_is_faster) ... ok
+test_invalid_laps_leave_results_unchanged (test_phase3.TestOptimizedContract.test_invalid_laps_leave_results_unchanged) ... ok
+test_lookup_and_empty_results (test_phase3.TestOptimizedContract.test_lookup_and_empty_results) ... ok
+test_reject_duplicate_and_blank_driver_ids (test_phase3.TestOptimizedContract.test_reject_duplicate_and_blank_driver_ids) ... ok
+test_tie_and_repeat_lap_keep_one_ranking_per_driver (test_phase3.TestOptimizedContract.test_tie_and_repeat_lap_keep_one_ranking_per_driver) ... ok
+test_update_only_when_lap_is_faster (test_phase3.TestOptimizedContract.test_update_only_when_lap_is_faster) ... ok
+test_adversarial_improvement_orders (test_phase3.TestPhase3.test_adversarial_improvement_orders) ... ok
+test_cache_invalidation_and_caller_mutation (test_phase3.TestPhase3.test_cache_invalidation_and_caller_mutation) ... ok
+test_invalid_input_preserves_warm_cache (test_phase3.TestPhase3.test_invalid_input_preserves_warm_cache) ... ok
+test_stream_parity_and_avl_invariants (test_phase3.TestPhase3.test_stream_parity_and_avl_invariants) ... ok
+test_stress_100000_laps (test_phase3.TestPhase3.test_stress_100000_laps) ... ok
+test_ties_arriving_in_reverse_order (test_phase3.TestPhase3.test_ties_arriving_in_reverse_order) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.110s
+
+OK
